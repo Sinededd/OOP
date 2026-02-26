@@ -1,0 +1,179 @@
+@startuml
+class org.example.Client {
+- {static} AtomicLong nextId
+- long id
+- String fullName
+- String email
+- String address
++ String getFullName()
++ void setFullName(String)
++ String getEmail()
++ void setEmail(String)
++ String getAddress()
++ void setAddress(String)
++ long getId()
+}
+
+
+class org.example.Feedback {
+- {static} AtomicLong nextId
+- long id
+- long clientId
+- String message
+- int rating
++ long getId()
++ long getClientId()
++ void setClientId(long)
++ String getMessage()
++ void setMessage(String)
++ int getRating()
++ void setRating(int)
+}
+
+class org.example.Card {
+- {static} AtomicLong nextId
+- long id
+- long accountId
+- String cardNumber
+- LocalDate expirationDate
+- String cvv
+- CardStatus status
++ long getAccountId()
++ void setAccountId(long)
++ long getId()
++ String getCardNumber()
++ String getCvv()
++ CardStatus getStatus()
++ void block()
++ void expire()
++ LocalDate getExpirationDate()
+}
+
+
+class org.example.Loan {
+- {static} AtomicLong nextId
+- long id
+- long clientId
+- double amount
+- double interestRate
+- int termMonths
++ long getId()
++ long getClientId()
++ void setClientId(long)
++ double getAmount()
++ void setAmount(double)
++ double getInterestRate()
++ void setInterestRate(double)
++ int getTermMonths()
++ void setTermMonths(int)
+}
+
+
+class org.example.Account {
+- {static} AtomicLong nextId
+- long id
+- String accountNumber
+- long clientId
+- double balance
+- AccountStatus status
++ long getId()
++ String getAccountNumber()
++ void setAccountNumber(String)
++ long getClientId()
++ void setClientId(long)
++ double getBalance()
++ void setBalance(double)
++ void changeBalance(double)
++ void block()
++ void activate()
++ Transaction transferTo(Account,double,Currency)
+}
+
+
+class org.example.Employee {
+- {static} AtomicLong nextId
+- long id
+- String fullName
+- String position
+- double salary
++ long getId()
++ String getFullName()
++ void setFullName(String)
++ String getPosition()
++ void setPosition(String)
++ double getSalary()
++ void setSalary(double)
+}
+
+
+class org.example.Transaction {
+- {static} AtomicLong nextId
+- long id
+- long fromAccountId
+- long toAccountId
+- double amount
++ long getId()
++ long getFromAccountId()
++ long getToAccountId()
++ double getAmount()
++ String toString()
+}
+
+
+class org.example.BankBranch {
+- {static} AtomicLong nextId
+- long id
+- String branchName
+- String address
+- String phoneNumber
++ long getId()
++ String getBranchName()
++ void setBranchName(String)
++ String getAddress()
++ void setAddress(String)
++ String getPhoneNumber()
++ void setPhoneNumber(String)
+}
+
+
+class org.example.Currency {
+- {static} AtomicLong nextId
+- long id
+- String code
+- double exchangeRateToMain
++ long getId()
++ String getCode()
++ void setCode(String)
++ double getExchangeRateToMain()
++ void setExchangeRateToMain(double)
+}
+
+
+class org.example.ATM {
+- {static} AtomicLong nextId
+- long id
+- String location
+- double cashBalance
++ long getId()
++ String getLocation()
++ void setLocation(String)
++ double getCashBalance()
++ void setCashBalance(double)
++ void changeCashBalance(double)
++ void withdrawCash(Account,double)
++ void putCash(Account,double)
+}
+
+
+enum org.example.AccountStatus {
++  ACTIVE
++  BLOCKED
+}
+
+enum org.example.CardStatus {
++  ACTIVE
++  BLOCKED
++  EXPIRED
+}
+
+@enduml
