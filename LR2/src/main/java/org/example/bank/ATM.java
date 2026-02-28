@@ -5,7 +5,8 @@ import org.example.client.PhysicalCard;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class ATM {
+public class ATM<T extends PhysicalCard> {
+
     private static final AtomicLong nextId = new AtomicLong(0);
     private final long id;
     private String location;
@@ -20,7 +21,6 @@ public class ATM {
     public long getId() {
         return id;
     }
-
 
     public String getLocation() {
         return location;
@@ -39,38 +39,48 @@ public class ATM {
     }
 
     public void changeCashBalanceATM(double amount) {
-        if(this.cashBalance + amount < 0) {
+        if (this.cashBalance + amount < 0) {
             throw new IllegalArgumentException("Not enough cash in ATM");
         }
         this.cashBalance += amount;
     }
 
-    public void withdrawCash(PhysicalCard card, double amount) {
-        if(amount <= 0) {
+    public void withdrawCash(T card, double amount) {
+
+        if (amount <= 0) {
             throw new IllegalArgumentException("Amount must be positive");
         }
-        if(this.cashBalance < amount) {
+
+        if (this.cashBalance < amount) {
             throw new IllegalArgumentException("Not enough cash in ATM");
         }
+
         IAccount account = card.getAccount();
-        if(account.getStatus() != org.example.account.AccountStatus.ACTIVE) {
+
+        if (!account.isActive()) {
             throw new IllegalStateException("Account is not active");
         }
-        if(account.getBalance() < amount) {
+
+        if (account.getBalance() < amount) {
             throw new IllegalArgumentException("Not enough balance on account");
         }
+
         account.withdraw(amount);
         changeCashBalanceATM(-amount);
     }
 
-    public void depositCash(PhysicalCard card, double amount) {
-        if(amount <= 0) {
+    public void depositCash(T card, double amount) {
+
+        if (amount <= 0) {
             throw new IllegalArgumentException("Amount must be positive");
         }
+
         IAccount account = card.getAccount();
-        if(account.getStatus() != org.example.account.AccountStatus.ACTIVE) {
+
+        if (!account.isActive()) {
             throw new IllegalStateException("Account is not active");
         }
+
         account.deposit(amount);
         changeCashBalanceATM(amount);
     }
