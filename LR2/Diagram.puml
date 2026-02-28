@@ -1,0 +1,107 @@
+@startuml
+
+class transaction.Transaction {
+- {static} AtomicLong nextId
+- long id
+- long fromAccountId
+- long toAccountId
+- double amount
+- Currency currency
+- TransactionStatus status
+}
+
+class bank.BankBranch {
+- List<Employee> employees
+- List<Feedback> feedbacks
+}
+
+class bank.ATM {
+- double cashBalance
++ void withdrawCash(PhysicalCard, double)
++ void depositCash(PhysicalCard, double)
+}
+
+class transaction.TransactionManager <<singleton>> {
+- {static} TransactionManager instance
+~ List<Transaction> transactions
+}
+
+enum client.CardStatus {
+  ACTIVE
+  BLOCKED
+  EXPIRED
+}
+
+abstract class client.Card {
+- IAccount account
+- CardStatus status
+}
+
+class client.VirtualCard {
+}
+
+class account.Account {
+}
+
+class bank.Feedback {
+- long clientId
+}
+
+class bank.Employee {
+}
+
+interface account.IAccount {
+}
+
+enum transaction.TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+class client.PhysicalCard {
+}
+
+class client.Client {
+- List<IAccount> accounts
+- List<Card> cards
+}
+
+enum account.AccountStatus {
+  ACTIVE
+  BLOCKED
+}
+
+class transaction.Currency {
+}
+
+
+client.Card <|-- client.VirtualCard
+client.Card <|-- client.PhysicalCard
+account.IAccount <|.. account.Account
+
+
+client.Client --> "0..*" account.IAccount
+client.Client --> "0..*" client.Card
+client.Client --> bank.BankBranch
+client.Client .> transaction.TransactionManager
+
+
+client.Card --> account.IAccount
+account.Account -> account.AccountStatus
+client.CardStatus <- client.Card
+
+
+transaction.TransactionManager --> "0..*" transaction.Transaction
+transaction.Transaction --> transaction.Currency
+transaction.Transaction --> transaction.TransactionStatus
+
+
+bank.BankBranch --> "0..*" bank.Employee
+bank.BankBranch --> "0..*" bank.Feedback
+bank.ATM ..> client.PhysicalCard
+bank.ATM ..> account.IAccount
+
+
+transaction.Transaction ..> account.IAccount
+@enduml

@@ -1,4 +1,4 @@
-package org.example;
+package org.example.transaction;
 
 import java.util.concurrent.atomic.AtomicLong;
 

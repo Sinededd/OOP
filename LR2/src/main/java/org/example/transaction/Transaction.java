@@ -1,4 +1,4 @@
-package org.example;
+package org.example.transaction;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -8,12 +8,17 @@ public class Transaction {
     private final long fromAccountId;
     private final long toAccountId;
     private final double amount;
+    private final Currency currency;
+    private TransactionStatus status;
 
-    public Transaction(long fromAccountId, long toAccountId, double amount) {
+
+    public Transaction(long fromAccountId, long toAccountId, double amount, Currency currency) {
         this.id = nextId.incrementAndGet();
         this.fromAccountId = fromAccountId;
         this.toAccountId = toAccountId;
         this.amount = amount;
+        this.currency = currency;
+        this.status = TransactionStatus.PENDING;
     }
 
     public long getId() {
@@ -32,10 +37,22 @@ public class Transaction {
         return amount;
     }
 
+    public TransactionStatus getTransactionStatus() {
+        return status;
+    }
+
+    public void setTransactionStatus(TransactionStatus transactionStatus) {
+        this.status = transactionStatus;
+    }
+
     @Override
     public String toString() {
         return "Transaction{" + "id=" + id +
                 ", fromAccountId=" + fromAccountId + ", toAccountId=" + toAccountId +
-                ", amount=" + amount + '}';
+                ", amount=" + amount + ", status=" + '}';
+    }
+
+    public Currency getCurrency() {
+        return currency;
     }
 }

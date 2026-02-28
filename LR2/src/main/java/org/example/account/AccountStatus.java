@@ -1,4 +1,4 @@
-package org.example;
+package org.example.account;
 
 public enum AccountStatus {
     ACTIVE, BLOCKED

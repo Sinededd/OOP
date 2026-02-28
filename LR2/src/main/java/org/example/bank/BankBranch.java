@@ -1,5 +1,7 @@
-package org.example;
+package org.example.bank;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class BankBranch {
@@ -8,6 +10,8 @@ public class BankBranch {
     private String branchName;
     private String address;
     private String phoneNumber;
+    private final List<Employee> employees = new ArrayList<>();
+    private final List<Feedback> feedbacks = new ArrayList<>();
 
     public BankBranch(String branchName, String address, String phoneNumber) {
         this.id = nextId.incrementAndGet();
@@ -43,5 +47,21 @@ public class BankBranch {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public List<Employee> getEmployees() {
+        return employees;
+    }
+
+    public  void addEmployee(Employee employee) {
+        employees.add(employee);
+    }
+
+    public List<Feedback> getFeedbacks() {
+        return feedbacks;
+    }
+
+    public void addFeedback(Feedback feedback) {
+        feedbacks.add(feedback);
     }
 }

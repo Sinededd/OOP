@@ -1,54 +1,100 @@
 package org.example;
 
 
+import org.example.account.Account;
+import org.example.account.IAccount;
+import org.example.bank.ATM;
+import org.example.bank.BankBranch;
+import org.example.client.Client;
+import org.example.client.PhysicalCard;
+import org.example.client.VirtualCard;
+import org.example.transaction.Currency;
+import org.example.transaction.Transaction;
+
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
     static void main() {
-        List<Transaction> transactions = new ArrayList<>();
-        Currency bubleCurrency = new Currency("Б", 1.0);
-        Currency eurCurrency = new Currency("EUR", 3.0);
-        Currency usdCurrency = new Currency("USD", 2.5);
 
-        Client client = new Client("Гришко Денис");
-        client.setEmail("grishkodenn.g@gmail.com");
+        Currency usd = new Currency("USD", 1.0);
 
-        Account denisAccount = new Account("12345678901234567890", client.getId());
-        denisAccount.setBalance(1000);
+        Client alice = new Client("Алиса Иванова", "alice@mail.com", "Нью-Йорк");
+        Client bob = new Client("Боб Смирнов", "bob@mail.com", "Лос-Анджелес");
+        
+        IAccount aliceAccount = new Account("ACC1001", alice.getId());
+        IAccount bobAccount = new Account("ACC2001", bob.getId());
 
-        Card denisCard = new Card("4444-5555-6666-7777",
-                LocalDate.now().plusYears(4),
+        alice.addAccount(aliceAccount);
+        bob.addAccount(bobAccount);
+
+        
+        aliceAccount.deposit(1000);
+        System.out.println("Баланс Алисы после пополнения: " + aliceAccount.getBalance());
+
+
+        PhysicalCard aliceCard = new PhysicalCard(
+                "1111-2222-3333-4444",
+                LocalDate.of(2028, 12, 31),
                 "123",
-                denisAccount.getId());
+                aliceAccount,
+                "Алиса Иванова",
+                "VISA",
+                1234
+        );
 
-        ATM atm = new ATM("Минск, Гикало 9", 50000.0);
+        VirtualCard bobVirtualCard = new VirtualCard(
+                "9999-8888-7777-6666",
+                "456",
+                bobAccount,
+                "bob@mail.com",
+                "MASTERCARD"
+        );
 
-        System.out.println("Баланс до снятия: " + denisAccount.getBalance());
-        try {
-            atm.withdrawCash(denisAccount, 200.0);
-            IO.println("Баланс после снятия: " + denisAccount.getBalance());
-            IO.println("Остаток в ATM: " + atm.getCashBalance() + "\n");
-        } catch (Exception e) {
-            IO.println("Ошибка: " + e.getMessage());
-        }
+        alice.addCard(aliceCard);
+        bob.addCard(bobVirtualCard);
 
-        Account receiverAccount = new Account("BY99BELB3600...", 999);
-        transactions.add(denisAccount.transferTo(receiverAccount, 100.0, usdCurrency));
-        IO.println("Перевод 100 EUR с аккаунта Дениса на аккаунт получателя выполнен.\n");
+        
+        ATM atm = new ATM("5-я Авеню", 5000);
 
-        IO.println("Баланс Дениса: " + denisAccount.getBalance());
-        IO.println("Баланс получателя: " + receiverAccount.getBalance() + "\n");
+        
+        System.out.println("\nАлиса снимает 200 через банкомат...");
+        alice.useATM(atm, aliceCard, 200, "WITHDRAW");
 
+        System.out.println("Баланс Алисы после снятия: " + aliceAccount.getBalance());
+        System.out.println("Баланс банкомата: " + atm.getCashBalance());
 
-        IO.println("Транзакции:");
-        for(var i : transactions) {
-            IO.println(i);
-        }
-        IO.println();
+        
+        System.out.println("\nАлиса переводит Бобу 300...");
+        Transaction transfer = alice.transferMoney(aliceAccount, bobAccount, 300, usd);
 
-        Feedback feedback = new Feedback(client.getId(), "Отличный сервис!", 5);
-        System.out.println("Клиент " + client.getFullName() + " оставил отзыв: " + feedback.getMessage());
+        System.out.println("Статус перевода: " + transfer.getTransactionStatus());
+        System.out.println("Баланс Алисы: " + aliceAccount.getBalance());
+        System.out.println("Баланс Боба: " + bobAccount.getBalance());
+
+        
+        System.out.println("\nАлиса оплачивает картой 100 Бобу...");
+        Transaction payment = alice.payWithCard(aliceCard, bobAccount, 100, usd);
+
+        System.out.println("Статус оплаты: " + payment.getTransactionStatus());
+        System.out.println("Баланс Алисы: " + aliceAccount.getBalance());
+        System.out.println("Баланс Боба: " + bobAccount.getBalance());
+
+        
+        System.out.println("\nБлокируем счет Алисы...");
+        aliceAccount.block();
+        System.out.println("Статус счета Алисы: " + aliceAccount.getStatus());
+
+        
+        System.out.println("\nПопытка перевода 50 после блокировки счета...");
+        Transaction failedTransfer = alice.transferMoney(aliceAccount, bobAccount, 50, usd);
+
+        System.out.println("Статус операции: " + failedTransfer.getTransactionStatus());
+
+        
+        BankBranch branch = new BankBranch("Центральное отделение", "Главная улица 1", "+1-555-1234");
+
+        alice.leaveFeedback(branch, "Отличное обслуживание!", 5);
+
+        System.out.println("\nКоличество отзывов в отделении: " + branch.getFeedbacks().size());
     }
 }
