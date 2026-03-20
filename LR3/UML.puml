@@ -1,0 +1,107 @@
+@startuml
+class staff.RobotPacker {
+- String model
++ String getModel()
++ void setModel(String)
++ void processOrder()
++ void attendMeeting()
++ void getRest()
++ void swingingTheLead()
+}
+
+
+class models.Order {
+- String id
+- List<Item> items
+- String type
+- String clientEmail
+- Address destination
++ String getId()
++ void setId(String)
++ List<Item> getItems()
++ void setItems(List<Item>)
++ String getType()
++ void setType(String)
++ String getClientEmail()
++ void setClientEmail(String)
++ Address getDestination()
++ void setDestination(Address)
+}
+
+
+interface staff.WarehouseWorker {
+~ void processOrder()
+~ void attendMeeting()
+~ void getRest()
+~ void swingingTheLead()
+}
+
+class staff.Warehouse {
++ {static} void manageWarehouse(List<WarehouseWorker>)
+}
+
+class models.Item {
+- String id
+- String name
+- double price
++ String getId()
++ void setId(String)
++ String getName()
++ void setName(String)
++ double getPrice()
++ void setPrice(double)
+}
+
+
+class App {
++ {static} void main(String[])
+}
+
+class infrastructure.RandomSQLDatabase {
+- String connectionString
++ String getConnectionString()
++ void setConnectionString(String)
++ void saveOrder(Order,double)
+}
+
+
+class infrastructure.SmtpMailer {
+- String server
++ String getServer()
++ void setServer(String)
++ void SendHtmlEmail(String,String,String)
+}
+
+
+class staff.HumanManager {
++ void processOrder()
++ void attendMeeting()
++ void getRest()
++ void swingingTheLead()
+}
+
+class models.Address {
+- String city
+- String street
+- String zip
++ String getCity()
++ void setCity(String)
++ String getStreet()
++ void setStreet(String)
++ String getZip()
++ void setZip(String)
+}
+
+
+class OrderProcessor {
+- RandomSQLDatabase database
+- SmtpMailer mailer
++ void Process(Order)
+}
+
+
+
+
+staff.WarehouseWorker <|.. staff.RobotPacker
+staff.WarehouseWorker <|.. staff.HumanManager
+@enduml
