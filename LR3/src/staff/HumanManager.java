@@ -3,7 +3,7 @@ package staff;
 /**
  * HumanManager - Человек
  */
-public class HumanManager implements WarehouseWorker {
+public class HumanManager implements Worker, MeetingParticipant, OrderTask, Slacker, BreakTaker {
     @Override
     public void processOrder() {
         System.out.println("Manager is processing logic...");
@@ -22,5 +22,13 @@ public class HumanManager implements WarehouseWorker {
     @Override
     public void swingingTheLead() {
         System.out.println("Manager is watching reels...");
+    }
+
+    @Override
+    public void performRoutine() {
+        processOrder();
+        attendMeeting();
+        getRest();
+        swingingTheLead();
     }
 }

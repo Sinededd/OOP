@@ -1,0 +1,136 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #FEFEFE
+skinparam class {
+    BackgroundColor #F8F9FA
+    BorderColor #2C3E50
+    ArrowColor #3498DB
+}
+
+package models {
+    class Order {
+        - id: String
+        - type: String
+        - clientEmail: String
+        + Order(id: String, type: String, items: List<Item>, clientEmail: String, destination: Address)
+        + getId(): String
+        + setId(id: String): void
+        + getItems(): List<Item>
+        + setItems(items: List<Item>): void
+        + getType(): String
+        + setType(type: String): void
+        + getClientEmail(): String
+        + setClientEmail(clientEmail: String): void
+        + getDestination(): Address
+        + setDestination(destination: Address): void
+    }
+
+    class Item {
+        - id: String
+        - name: String
+        - price: double
+        + Item(id: String, name: String, price: double)
+        + getId(): String
+        + setId(id: String): void
+        + getName(): String
+        + setName(name: String): void
+        + getPrice(): double
+        + setPrice(price: double): void
+    }
+
+    class Address {
+        - city: String
+        - street: String
+        - zip: String
+        + Address(city: String, street: String, zip: String)
+        + getCity(): String
+        + setCity(city: String): void
+        + getStreet(): String
+        + setStreet(street: String): void
+        + getZip(): String
+        + setZip(zip: String): void
+    }
+
+    Order "1" *-- "many" Item : contains
+    Order "1" *-- "1" Address : has
+}
+
+package infrastructure {
+    class SmtpMailer {
+        - server: String
+        + SmtpMailer(server: String)
+        + getServer(): String
+        + setServer(server: String): void
+        + SendHtmlEmail(to: String, subject: String, body: String): void
+    }
+
+    class RandomSQLDatabase {
+        - connectionString: String
+        + RandomSQLDatabase()
+        + getConnectionString(): String
+        + setConnectionString(connectionString: String): void
+        + saveOrder(order: Order, total: double): void
+    }
+}
+
+package staff {
+    interface WarehouseWorker {
+        + processOrder(): void
+        + attendMeeting(): void
+        + getRest(): void
+        + swingingTheLead(): void
+    }
+
+    class HumanManager {
+        + processOrder(): void
+        + attendMeeting(): void
+        + getRest(): void
+        + swingingTheLead(): void
+    }
+
+    class RobotPacker {
+        - model: String
+        + RobotPacker(model: String)
+        + getModel(): String
+        + setModel(model: String): void
+        + processOrder(): void
+        + attendMeeting(): void
+        + getRest(): void
+        + swingingTheLead(): void
+    }
+
+    class Warehouse {
+        + {static} manageWarehouse(workers: List<WarehouseWorker>): void
+    }
+
+    WarehouseWorker <|.. HumanManager : implements
+    WarehouseWorker <|.. RobotPacker : implements
+    Warehouse ..> WarehouseWorker : uses
+}
+
+class OrderProcessor {
+    - database: RandomSQLDatabase
+    - mailer: SmtpMailer
+    + OrderProcessor()
+    + Process(order: Order): void
+}
+
+
+OrderProcessor --> RandomSQLDatabase : uses
+OrderProcessor --> SmtpMailer : uses
+OrderProcessor ..> Order : processes
+
+note top of RobotPacker
+    Метод swingingTheLead() выбрасывает
+    RuntimeException: "CRITICAL ERROR: Robot cannot waste our money"
+end note
+
+note top of OrderProcessor
+    Проблемы в методе Process():
+    - switch-case с ошибками (Standart вместо Standard)
+    - Отсутствие break в Budget
+    - Сравнение строк через == вместо equals()
+end note
+
+@enduml

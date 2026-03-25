@@ -1,0 +1,6 @@
+[2026-03-25T20:25:52.985196134Z]
+Subject: Order Confirmation
+Body: <h1>Your order ORD-256-X is confirmed!</h1><p>Total: 1422.90</p>
+[2026-03-25T20:25:52.986308931Z]
+Subject: Order Confirmation
+Body: <h1>Your order ORD-256-X is confirmed!</h1><p>Total: 1422.90</p>

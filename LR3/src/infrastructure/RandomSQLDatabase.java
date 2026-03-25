@@ -13,7 +13,7 @@ import models.Order;
 /**
  * RandomSQLDatabase - имитация тяжелой базы данных
  */
-public class RandomSQLDatabase {
+public class RandomSQLDatabase implements IDatabase{
     private String connectionString;
 
     public RandomSQLDatabase() {
@@ -35,13 +35,14 @@ public class RandomSQLDatabase {
      * @param total
      * @throws InterruptedException
      */
+    @Override
     public void saveOrder(Order order, double total) throws InterruptedException {
         System.out.println("Connecting to RandomSQL at " + connectionString + " ...");
-        Thread.sleep(500); // Имитация задержки сети
+        Thread.sleep(1000); // Имитация задержки сети
 
         var record = String.format("[%s] ID: %s | Type: %s | Total: %.2f\n",
                 LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_INSTANT), order.getId(),
-                order.getType(), total);
+                order.getType().getTypeName(), total);
         try {
             Files.writeString(Path.of("orders_db.txt"), record, StandardOpenOption.APPEND, StandardOpenOption.CREATE,
                     StandardOpenOption.WRITE);

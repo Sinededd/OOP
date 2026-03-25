@@ -2,20 +2,34 @@ package models;
 
 import java.util.List;
 
+import card.IDiscountCard;
+import order.OrderType;
+
 /**
  * Order - заказ
  */
 public class Order {
     private String id;
     private List<Item> items;
-    private String type; // "Standard", "Premium", "Budget", "International"
+    private OrderType type;
+    private IDiscountCard discountCard;
     private String clientEmail;
     private Address destination;
 
-    public Order(String id, String type, List<Item> items, String clientEmail, Address destination) {
+    public Order(String id, OrderType type, List<Item> items, String clientEmail, Address destination) {
         this.id = id;
         this.items = items;
         this.type = type;
+        this.discountCard = null;
+        this.clientEmail = clientEmail;
+        this.destination = destination;
+    }
+
+    public Order(String id, OrderType type, IDiscountCard discountCard, List<Item> items, String clientEmail, Address destination) {
+        this.id = id;
+        this.items = items;
+        this.type = type;
+        this.discountCard = discountCard;
         this.clientEmail = clientEmail;
         this.destination = destination;
     }
@@ -36,11 +50,11 @@ public class Order {
         this.items = items;
     }
 
-    public String getType() {
+    public OrderType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(OrderType type) {
         this.type = type;
     }
 
@@ -58,5 +72,13 @@ public class Order {
 
     public void setDestination(Address destination) {
         this.destination = destination;
+    }
+
+    public IDiscountCard getDiscountCard() {
+        return discountCard;
+    }
+
+    public void setDiscountCard(IDiscountCard discountCard) {
+        this.discountCard = discountCard;
     }
 }

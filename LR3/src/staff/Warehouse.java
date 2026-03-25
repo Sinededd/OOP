@@ -8,13 +8,10 @@ public class Warehouse {
      * 
      * @param workers
      */
-    public static void manageWarehouse(List<WarehouseWorker> workers) {
+    public static void manageWarehouse(List<Worker> workers) {
         System.out.println("\n--- Warehouse Shift Started ---");
         for (var worker : workers) {
-            worker.processOrder();
-            worker.attendMeeting();
-            worker.getRest();
-            worker.swingingTheLead();
+            worker.performRoutine();
         }
     }
 }

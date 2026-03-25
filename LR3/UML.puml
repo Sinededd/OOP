@@ -1,107 +1,127 @@
 @startuml
-class staff.RobotPacker {
-- String model
-+ String getModel()
-+ void setModel(String)
-+ void processOrder()
-+ void attendMeeting()
-+ void getRest()
-+ void swingingTheLead()
+skinparam ClassAttributeIconSize 0
+'skinparam monochrome true
+skinparam shadowing false
+
+package "models" {
+    class Order {
+        - id: String
+        - items: List<Item>
+        - type: OrderType
+        - discountCard: IDiscountCard
+        - clientEmail: String
+        - destination: Address
+    }
+    class Item {
+        - id: String
+        - name: String
+        - price: double
+    }
+    class Address {
+        - city: String
+        - street: String
+        - zip: String
+    }
 }
 
+package "order" {
+    interface OrderType {
+        + getTypeName(): String
+        + OrderConditions(order: Order, total: double): double
+        + validate(order: Order)
+    }
+    class OrderStandardType implements OrderType
+    class OrderPremiumType implements OrderType
+    class OrderBudgetType implements OrderType
 
-class models.Order {
-- String id
-- List<Item> items
-- String type
-- String clientEmail
-- Address destination
-+ String getId()
-+ void setId(String)
-+ List<Item> getItems()
-+ void setItems(List<Item>)
-+ String getType()
-+ void setType(String)
-+ String getClientEmail()
-+ void setClientEmail(String)
-+ Address getDestination()
-+ void setDestination(Address)
+    class OrderValidator {
+        {static} + validateOrder(order: Order)
+    }
+    class OrderAmount {
+        {static} + calculatingAmount(order: Order): double
+    }
 }
 
-
-interface staff.WarehouseWorker {
-~ void processOrder()
-~ void attendMeeting()
-~ void getRest()
-~ void swingingTheLead()
+package "card" {
+    interface IDiscountCard {
+        + apply(price: double): double
+        + getCardName(): String
+    }
+    class GoldCard implements IDiscountCard
+    class SilverCard implements IDiscountCard
+    class NewbieCard implements IDiscountCard
 }
 
-class staff.Warehouse {
-+ {static} void manageWarehouse(List<WarehouseWorker>)
+package "infrastructure" {
+    interface IDatabase {
+        + saveOrder(order: Order, total: double)
+    }
+    class RandomSQLDatabase implements IDatabase {
+        - connectionString: String
+    }
+    class DatabaseCache implements IDatabase {
+        - database: IDatabase
+        - cache: Set<String>
+    }
+
+    interface INotification {
+        + SendNotification(subject: String, body: String)
+    }
+    class NotificationManager {
+        - notificationServices: List<INotification>
+        + registerNotificationService(n: INotification)
+        + sendNotification(subject: String, body: String)
+    }
+    class TelegramSender implements INotification
+    class SmtpMailer implements INotification
+    class NotificationLogger implements INotification
 }
 
-class models.Item {
-- String id
-- String name
-- double price
-+ String getId()
-+ void setId(String)
-+ String getName()
-+ void setName(String)
-+ double getPrice()
-+ void setPrice(double)
+package "staff" {
+    interface Worker {
+        + performRoutine()
+    }
+    interface OrderTask {
+        + processOrder()
+    }
+    interface BreakTaker {
+        + getRest()
+    }
+    interface Slacker {
+        + swingingTheLead()
+    }
+    interface MeetingParticipant {
+        + attendMeeting()
+    }
+
+    class RobotPacker implements Worker, OrderTask, BreakTaker
+    class HumanManager implements Worker, OrderTask, BreakTaker, Slacker, MeetingParticipant
+
+    class Warehouse {
+        {static} + manageWarehouse(workers: List<Worker>)
+    }
 }
-
-
-class App {
-+ {static} void main(String[])
-}
-
-class infrastructure.RandomSQLDatabase {
-- String connectionString
-+ String getConnectionString()
-+ void setConnectionString(String)
-+ void saveOrder(Order,double)
-}
-
-
-class infrastructure.SmtpMailer {
-- String server
-+ String getServer()
-+ void setServer(String)
-+ void SendHtmlEmail(String,String,String)
-}
-
-
-class staff.HumanManager {
-+ void processOrder()
-+ void attendMeeting()
-+ void getRest()
-+ void swingingTheLead()
-}
-
-class models.Address {
-- String city
-- String street
-- String zip
-+ String getCity()
-+ void setCity(String)
-+ String getStreet()
-+ void setStreet(String)
-+ String getZip()
-+ void setZip(String)
-}
-
 
 class OrderProcessor {
-- RandomSQLDatabase database
-- SmtpMailer mailer
-+ void Process(Order)
+    - database: IDatabase
+    - notificationManager: NotificationManager
+    + Process(order: Order)
 }
 
+' Relationships
+Order "1" *-- "many" Item
+Order "1" o-- "1" OrderType
+Order "1" o-- "1" IDiscountCard
+Order "1" *-- "1" Address
 
+OrderProcessor ..> OrderValidator : uses
+OrderProcessor ..> OrderAmount : uses
+OrderProcessor --> IDatabase
+OrderProcessor --> NotificationManager
 
+DatabaseCache o-- IDatabase : decorates
+NotificationManager "1" o-- "many" INotification
 
-staff.WarehouseWorker <|.. staff.RobotPacker
-staff.WarehouseWorker <|.. staff.HumanManager
+Warehouse ..> Worker : manages
+
 @enduml

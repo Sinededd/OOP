@@ -3,7 +3,7 @@ package staff;
 /**
  * RobotPacker - Робот
  */
-public class RobotPacker implements WarehouseWorker {
+public class RobotPacker implements Worker, OrderTask, BreakTaker {
     private String model;
 
     public RobotPacker(String model) {
@@ -24,17 +24,13 @@ public class RobotPacker implements WarehouseWorker {
     }
 
     @Override
-    public void attendMeeting() {
-        System.out.println("ERROR: Robot cannot attend meetings");
-    }
-
-    @Override
     public void getRest() {
         System.out.println("Robot was taken for maintenance");
     }
 
     @Override
-    public void swingingTheLead() {
-        throw new RuntimeException("CRITICAL ERROR: Robot cannot waste our money (we hope so)");
+    public void performRoutine() {
+        processOrder();
+        getRest();
     }
 }

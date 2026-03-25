@@ -1,17 +1,20 @@
-import infrastructure.RandomSQLDatabase;
-import infrastructure.SmtpMailer;
+import infrastructure.IDatabase;
+import infrastructure.INotification;
+import infrastructure.NotificationManager;
 import models.Order;
+import order.OrderAmount;
+import order.OrderValidator;
 
 /**
  * Основная бизнес-логика.
  */
 public class OrderProcessor {
-    private final RandomSQLDatabase database;
-    private final SmtpMailer mailer;
+    private final IDatabase database;
+    private final NotificationManager notificationManager;
 
-    public OrderProcessor() {
-        this.database = new RandomSQLDatabase();
-        this.mailer = new SmtpMailer("smtp.google.com");
+    public OrderProcessor(IDatabase database, NotificationManager notificationManager) {
+        this.database = database;
+        this.notificationManager = notificationManager;
     }
 
     public void Process(Order order) {
@@ -19,52 +22,36 @@ public class OrderProcessor {
         var orderItems = order.getItems();
 
         // 1. Логика валидации
-        if (orderItems.isEmpty()) {
-            throw new RuntimeException("order must have at least one item");
-        }
-        if (order.getDestination().getCity().isEmpty()) {
-            throw new RuntimeException("destination city is required");
-        }
+        ValidateOrder(order);
 
-        // 2. Логика расчета суммы
-        double total = 0;
-        for (var item : orderItems) {
-            total += item.getPrice();
-        }
-
-        // 3. Логика скидок и налогов
-        switch (order.getType()) {
-            case "Standart":
-                // Стандартный налог
-                total *= 1.2;
-                break;
-            case "Premium":
-                total *= 0.9 * 1.2;
-                break;
-            case "Budget":
-                if (orderItems.size() > 3) {
-                    System.out.println("Budget orders cannot have more than 3 items. Skipping.");
-                    return;
-                }
-            case "International":
-                total *= 1.5;
-                if (order.getDestination().getCity() == "Nowhere") {
-                    throw new RuntimeException("cannot ship to Nowhere");
-                }
-            default:
-                throw new RuntimeException("unknown order type");
-        }
+        // 2. Логика расчета суммы с учетом тарифа
+        double total = OrderAmount.calculatingAmount(order);
 
         // 4. Логика сохранения
+        SaveOrder(order, total);
+
+        // 5. Логика уведомлений
+        sendNotification(order, total);
+    }
+
+    public void ValidateOrder(Order order)
+    {
+        OrderValidator.validateOrder(order);
+    }
+
+    public void SaveOrder(Order order, double total)
+    {
         try {
             database.saveOrder(order, total);
         } catch (Exception e) {
             System.err.println("database error: " + e.getMessage());
             throw new RuntimeException(e);
         }
+    }
 
-        // 5. Логика уведомлений
+    public void sendNotification(Order order, double total)
+    {
         var emailBody = String.format("<h1>Your order %s is confirmed!</h1><p>Total: %.2f</p>", order.getId(), total);
-        mailer.SendHtmlEmail(order.getClientEmail(), "Order Confirmation", emailBody);
+        notificationManager.sendNotification("Order Confirmation", emailBody);
     }
 }
