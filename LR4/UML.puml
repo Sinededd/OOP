@@ -1,0 +1,88 @@
+@startuml
+
+package Utilities {
+    class DataStore {
+        - instance : DataStore
+        - cargoCatalog : Map<String, double[]>
+        - transportCatalog : Map<String, double[]>
+        + getInstance() : DataStore
+        - loadData()
+        + getCargoData(name : String) : double[]
+        + getTransportData(name : String) : double[]
+    }
+}
+
+package Transport {
+
+    abstract class Transport {
+        - name : String
+        - expensePerKm : double
+        - speedKmH : double
+        + getTime(distance : double) : double
+        + getExpense(distance : double) : double
+        + getExpensePerKm() : double
+        + getSpeedKmH() : double
+    }
+
+    abstract class Logistic {
+        + createTransport(name : String) : Transport
+        # buildSpecificTransport(name : String, expensePerKm : double, speedKmH : double) : Transport
+    }
+
+    class LandTransport
+    class AirTransport
+    class WaterTransport
+
+    class LandLogistic
+    class AirLogistic
+    class WaterLogistic
+
+    Transport <|-- LandTransport
+    Transport <|-- AirTransport
+    Transport <|-- WaterTransport
+
+    Logistic <|-- LandLogistic
+    Logistic <|-- AirLogistic
+    Logistic <|-- WaterLogistic
+
+    Logistic --> Transport : creates
+}
+
+package Order {
+
+    class Order {
+        - batch : Batch
+        - distance : double
+        - transport : Transport
+        + addCargo(name : String, quantity : int)
+        + getTotalCost() : double
+        + getTime() : double
+        + getExpense() : double
+    }
+
+    class Batch {
+        - cargoList : List<Cargo>
+        + addCargo(name : String, quantity : int)
+        + getCost() : double
+        + getCargoList() : List<Cargo>
+    }
+
+    class Cargo {
+        - name : String
+        - quantity : int
+        - unitMass : double
+        - costPerKg : double
+        + getTotalMass() : double
+        + getCost() : double
+    }
+
+    Order --> Batch
+    Order --> Transport
+    Batch --> Cargo
+}
+
+' Зависимости
+Batch ..> DataStore
+Logistic ..> DataStore
+
+@enduml
