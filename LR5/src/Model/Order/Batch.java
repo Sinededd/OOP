@@ -1,17 +1,22 @@
-package Order;
+package Model.Order;
 
-import Utilities.InMemoryDataStore;
+import Utilities.LogisticStore.DataStore;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Batch {
     private final List<Cargo> cargoList = new ArrayList<>();
+    private final DataStore dataStore;
+
+    public Batch(DataStore dataStore) {
+        this.dataStore = dataStore;
+    }
 
     public void addCargo(String name, int quantity) {
-        double[] data = InMemoryDataStore.getInstance().getCargoData(name);
+        CargoSpecs data = dataStore.getCargoSpecs(name);
         if (data != null) {
-            cargoList.add(new Cargo(name, quantity, data[0], data[1]));
+            cargoList.add(new Cargo(quantity, data));
         } else {
             throw new IllegalArgumentException("Товар не найден в базе: " + name);
         }

@@ -1,4 +1,4 @@
-package Order;
+package Model.Order;
 
 public class Cargo {
     private final String name;
@@ -11,6 +11,13 @@ public class Cargo {
         this.quantity = quantity;
         this.unitMass = unitMass;
         this.costPerKg = costPerKg;
+    }
+
+    public Cargo(int quantity, CargoSpecs cargoSpecs) {
+        this.name = cargoSpecs.name();
+        this.quantity = quantity;
+        this.unitMass = cargoSpecs.unitMass();
+        this.costPerKg = cargoSpecs.costPerKg();
     }
 
     public double getTotalMass() {

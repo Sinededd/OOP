@@ -1,0 +1,28 @@
+{
+  "cargos": [
+    {
+      "name": "Уголь",
+      "mass": 5000.0,
+      "costPerKg": 12.5
+    },
+    {
+      "name": "Электроника",
+      "mass": 300.0,
+      "costPerKg": 2500.0
+    }
+  ],
+  "transports": [
+    {
+      "name": "Грузовик",
+      "type": "Земля",
+      "consumption": 32.5,
+      "speed": 90.0
+    },
+    {
+      "name": "Самолет",
+      "type": "Воздух",
+      "consumption": 10000.0,
+      "speed": 900.0
+    }
+  ]
+}

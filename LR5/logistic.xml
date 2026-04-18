@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LogisticData>
+    <CargoItems>
+        <Item>
+            <Name>Мебель</Name>
+            <Mass>50.0</Mass>
+            <CostPerKg>40.0</CostPerKg>
+        </Item>
+        <Item>
+            <Name>Строительные материалы</Name>
+            <Mass>500.0</Mass>
+            <CostPerKg>10.0</CostPerKg>
+        </Item>
+        <Item>
+            <Name>Медикаменты</Name>
+            <Mass>0.5</Mass>
+            <CostPerKg>200.0</CostPerKg>
+        </Item>
+    </CargoItems>
+    <TransportItems>
+        <Item>
+            <Name>Мотоцикл</Name>
+            <Type>Земля</Type>
+            <Consumption>4.0</Consumption>
+            <Speed>110.0</Speed>
+        </Item>
+        <Item>
+            <Name>Баржа</Name>
+            <Type>Вода</Type>
+            <Consumption>1.5</Consumption>
+            <Speed>20.0</Speed>
+        </Item>
+        <Item>
+            <Name>Дрон</Name>
+            <Type>Воздух</Type>
+            <Consumption>0.5</Consumption>
+            <Speed>60.0</Speed>
+        </Item>
+    </TransportItems>
+</LogisticData>

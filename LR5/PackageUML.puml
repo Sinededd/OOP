@@ -31,11 +31,10 @@ class CargoSpecs {
   + costPerKg: double
 }
 
-Order --> Batch
-Order --> Transport
-Batch --> Cargo
-Batch --> DataStore
-Cargo --> CargoSpecs
+Order -- Batch
+Order -- Transport
+Batch -- Cargo
+Batch -- DataStore
 
 ' ====== Model.Transport ======
 abstract class Transport {
@@ -67,9 +66,7 @@ class TransportFactory {
   + createTransport(name): Transport
 }
 
-TransportFactory --> Transport
-TransportFactory --> TransportSpecs
-TransportFactory --> DataStore
+TransportFactory -- DataStore
 
 ' ====== Utilities.LogisticStore ======
 interface DataStore {
@@ -85,8 +82,8 @@ class InMemoryDataStore {
 
 DataStore <|.. InMemoryDataStore
 
-InMemoryDataStore --> CargoSpecs
-InMemoryDataStore --> TransportSpecs
+InMemoryDataStore -- CargoSpecs
+InMemoryDataStore -- TransportSpecs
 
 ' ====== Utilities.LogisticLoader ======
 interface DataLoader {
@@ -102,7 +99,7 @@ DataLoader <|.. CsvDataLoader
 DataLoader <|.. JsonDataLoader
 DataLoader <|.. XmlDataLoader
 
-InMemoryDataStore --> DataLoader
+InMemoryDataStore -- DataLoader
 
 ' ====== Utilities.OrderSort ======
 interface Sortable<T> {
@@ -119,11 +116,7 @@ Sortable <|.. SortOrderByTime
 Sortable <|.. SortOrderByTransportType
 Sortable <|.. ReverseSorter
 
-ReverseSorter --> Sortable
-
-SortOrderByCost --> Order
-SortOrderByTime --> Order
-SortOrderByTransportType --> Order
+ReverseSorter -- Sortable
 
 ' ====== Utilities.OrderSave ======
 interface OrderSaver {
@@ -146,12 +139,8 @@ OrderSaver <|.. OrderSaverDecorator
 OrderSaverDecorator <|-- EncryptionDecorator
 OrderSaverDecorator <|-- CompressionDecorator
 
-OrderSaverDecorator --> OrderSaver
+OrderSaverDecorator -- OrderSaver
 
-CsvOrderSaver --> Order
-JsonOrderSaver --> Order
-EncryptionDecorator --> Order
-CompressionDecorator --> Order
 
 ' ====== Utilities.OrderFilter ======
 interface Filterable<T> {
@@ -166,14 +155,17 @@ class CompositeFilter<T> {
 
 class FilterByCost {
   - double maxCost
+  + filter(List<Order>): List<Order>
 }
 
 class FilterByTime {
   - double maxTime
+  + filter(List<Order>): List<Order>
 }
 
 class FilterByTransportType {
   - String type
+  + filter(List<Order>): List<Order>
 }
 
 Filterable <|.. CompositeFilter
@@ -181,10 +173,7 @@ Filterable <|.. FilterByCost
 Filterable <|.. FilterByTime
 Filterable <|.. FilterByTransportType
 
-CompositeFilter --> Filterable
+CompositeFilter -- Filterable
 
-FilterByCost --> Order
-FilterByTime --> Order
-FilterByTransportType --> Order
 
 @enduml
