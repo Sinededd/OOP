@@ -1,0 +1,58 @@
+[ {
+  "batch" : {
+    "cargoList" : [ {
+      "name" : "Оборудование",
+      "quantity" : 12,
+      "totalMass" : 1440.0,
+      "cost" : 21600.0
+    } ],
+    "cost" : 21600.0
+  },
+  "distance" : 123.0,
+  "transport" : {
+    "name" : "Грузовик",
+    "type" : "Земля",
+    "expensePerKm" : 15.0,
+    "speedKmH" : 80.0
+  },
+  "time" : 1.5375,
+  "totalCost" : 23445.0
+}, {
+  "batch" : {
+    "cargoList" : [ {
+      "name" : "Оборудование",
+      "quantity" : 12,
+      "totalMass" : 1440.0,
+      "cost" : 21600.0
+    } ],
+    "cost" : 21600.0
+  },
+  "distance" : 123.0,
+  "transport" : {
+    "name" : "Поезд",
+    "type" : "Земля",
+    "expensePerKm" : 5.0,
+    "speedKmH" : 60.0
+  },
+  "time" : 2.05,
+  "totalCost" : 22215.0
+}, {
+  "batch" : {
+    "cargoList" : [ {
+      "name" : "Оборудование",
+      "quantity" : 12,
+      "totalMass" : 1440.0,
+      "cost" : 21600.0
+    } ],
+    "cost" : 21600.0
+  },
+  "distance" : 123.0,
+  "transport" : {
+    "name" : "Танкер",
+    "type" : "Вода",
+    "expensePerKm" : 2.0,
+    "speedKmH" : 35.0
+  },
+  "time" : 3.5142857142857142,
+  "totalCost" : 21846.0
+} ]
