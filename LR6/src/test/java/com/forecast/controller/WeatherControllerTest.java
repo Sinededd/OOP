@@ -1,6 +1,7 @@
 package com.forecast.controller;
 
 import com.forecast.model.CurrentWeather;
+import com.forecast.model.WeatherForecast;
 import com.forecast.model.WeatherProvider;
 import com.forecast.service.WeatherService;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -63,5 +67,34 @@ class WeatherControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.code").value(500))
                 .andExpect(jsonPath("$.message").value("External API down"));
+    }
+
+    @Test
+    void getForecast_ReturnsSuccess() throws Exception {
+        List<WeatherForecast> forecasts = List.of(
+                new WeatherForecast(LocalDate.of(2026, 5, 15), new BigDecimal("20.0"))
+        );
+
+        when(weatherService.getForecast(any(), any(), any())).thenReturn(forecasts);
+
+        mockMvc.perform(get("/api/v1/forecast")
+                        .param("city", "Минск")
+                        .param("provider", "GOOGLE_WEATHER"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].temperature").value(20.0))
+                .andExpect(jsonPath("$.data[0].date").value("2026-05-15"));
+    }
+
+    @Test
+    void getBatchWeather_ReturnsMap() throws Exception {
+        Map<String, BigDecimal> batchData = Map.of("Минск", new BigDecimal("15.0"));
+
+        when(weatherService.getMultipleTemperatures(any(), any())).thenReturn(batchData);
+
+        mockMvc.perform(get("/api/v1/weather/batch")
+                        .param("cities", "Минск")
+                        .param("provider", "OPEN_WEATHER"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.Минск").value(15.0));
     }
 }
