@@ -2,6 +2,7 @@ package com.forecast.controller;
 
 import java.math.BigDecimal;
 
+import com.forecast.model.WeatherProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,9 +33,14 @@ public class WeatherController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get Current Weather", description = "Returns current weather for given coordinates")
     public SuccessResponse<CurrentWeather> getCurrentWeather(
-            @Parameter(description = "Latitude", required = true, example = "53.9006") @RequestParam BigDecimal lat,
-            @Parameter(description = "Longitude", required = true, example = "27.5590") @RequestParam BigDecimal lon) {
-        CurrentWeather result = service.getCurrentWeather(lat, lon);
+            @Parameter(description = "Latitude", required = true)
+            @RequestParam BigDecimal lat,
+            @Parameter(description = "Longitude", required = true)
+            @RequestParam BigDecimal lon,
+            @Parameter(description = "Provider", required = true)
+            @RequestParam(defaultValue = "OPEN_WEATHER") WeatherProvider provider)
+            {
+        CurrentWeather result = service.getCurrentWeather(lat, lon, provider);
         return new SuccessResponse<>(200, "Success", result);
     }
 

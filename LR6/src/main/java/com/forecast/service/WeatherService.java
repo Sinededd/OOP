@@ -1,21 +1,38 @@
 package com.forecast.service;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.forecast.model.WeatherForecast;
+import com.forecast.model.WeatherProvider;
 import org.springframework.stereotype.Service;
 
 import com.forecast.client.WeatherDataClient;
 import com.forecast.model.CurrentWeather;
 
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class WeatherService {
-    private final WeatherDataClient client;
+    private final Map<WeatherProvider, WeatherDataClient> clients;
 
-    public CurrentWeather getCurrentWeather(BigDecimal lat, BigDecimal lon) {
+    public WeatherService(List<WeatherDataClient> clientList) {
+        this.clients = clientList.stream()
+                .collect(Collectors.toMap(
+                        WeatherDataClient::getProviderType,
+                        client -> client
+                ));
+    }
+
+    public CurrentWeather getCurrentWeather(BigDecimal lat, BigDecimal lon, WeatherProvider provider) {
+        WeatherDataClient client = clients.get(provider);
         BigDecimal temperature = client.getCurrentTemperature(lat, lon);
         return new CurrentWeather(temperature);
+    }
+
+    public List<WeatherForecast> getForecast(BigDecimal lat, BigDecimal lon, WeatherProvider provider) {
+        WeatherDataClient client = clients.get(provider);
+        return client.getForecast(lat, lon);
     }
 }

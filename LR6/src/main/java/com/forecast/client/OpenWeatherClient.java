@@ -1,7 +1,10 @@
 package com.forecast.client;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import com.forecast.model.WeatherForecast;
+import com.forecast.model.WeatherProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -19,6 +22,11 @@ public class OpenWeatherClient implements WeatherDataClient {
 
     @Qualifier("openWeatherRestClient")
     private final RestClient restClient;
+
+    @Override
+    public WeatherProvider getProviderType() {
+        return null;
+    }
 
     @Override
     public BigDecimal getCurrentTemperature(BigDecimal lat, BigDecimal lon) {
@@ -49,5 +57,10 @@ public class OpenWeatherClient implements WeatherDataClient {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<WeatherForecast> getForecast(BigDecimal lat, BigDecimal lon) {
+        return List.of();
     }
 }
