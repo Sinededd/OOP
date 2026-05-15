@@ -1,6 +1,7 @@
 package com.forecast.controller;
 
 import com.forecast.model.CurrentWeather;
+import com.forecast.model.WeatherProvider;
 import com.forecast.service.WeatherService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ class WeatherControllerTest {
     @Test
     void getCurrentWeather_Returns200_WhenValidCoordinates() throws Exception {
         CurrentWeather mockWeather = new CurrentWeather(new BigDecimal("22.5"));
-        when(weatherService.getCurrentWeather(any(BigDecimal.class), any(BigDecimal.class)))
+        when(weatherService.getCurrentWeather(any(BigDecimal.class), any(BigDecimal.class), any(WeatherProvider.class)))
                 .thenReturn(mockWeather);
 
         mockMvc.perform(get("/api/v1/weather")
@@ -53,7 +54,7 @@ class WeatherControllerTest {
 
     @Test
     void getCurrentWeather_Returns500_WhenServiceThrowsException() throws Exception {
-        when(weatherService.getCurrentWeather(any(), any()))
+        when(weatherService.getCurrentWeather(any(), any(), any(WeatherProvider.class)))
                 .thenThrow(new RuntimeException("External API down"));
 
         mockMvc.perform(get("/api/v1/weather")
