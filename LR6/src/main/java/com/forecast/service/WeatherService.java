@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.forecast.model.City;
 import com.forecast.model.WeatherForecast;
 import com.forecast.model.WeatherProvider;
 import org.springframework.stereotype.Service;
@@ -34,5 +35,15 @@ public class WeatherService {
     public List<WeatherForecast> getForecast(BigDecimal lat, BigDecimal lon, WeatherProvider provider) {
         WeatherDataClient client = clients.get(provider);
         return client.getForecast(lat, lon);
+    }
+
+    public Map<String, BigDecimal> getMultipleTemperatures(List<String> cityNames, WeatherProvider provider) {
+        return cityNames.stream().collect(Collectors.toMap(
+                name -> name,
+                name -> {
+                    City city = City.fromName(name);
+                    return clients.get(provider).getCurrentTemperature(city.getLat(), city.getLon());
+                }
+        ));
     }
 }

@@ -96,4 +96,17 @@ class WeatherServiceTest {
         );
     }
 
+    @Test
+    void getMultipleTemperatures_ReturnsMapOfCities() {
+        List<String> cities = List.of("Минск", "London");
+        when(client.getCurrentTemperature(any(), any()))
+                .thenReturn(new BigDecimal("10.0"))
+                .thenReturn(new BigDecimal("20.0"));
+
+        var result = weatherService.getMultipleTemperatures(cities, WeatherProvider.OPEN_WEATHER);
+
+        assertEquals(2, result.size());
+        assertEquals(new BigDecimal("10.0"), result.get("Минск"));
+        assertEquals(new BigDecimal("20.0"), result.get("London"));
+    }
 }

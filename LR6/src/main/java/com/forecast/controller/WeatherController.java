@@ -1,7 +1,11 @@
 package com.forecast.controller;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
+import com.forecast.model.City;
+import com.forecast.model.WeatherForecast;
 import com.forecast.model.WeatherProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -54,5 +58,22 @@ public class WeatherController {
     @ExceptionHandler
     public StatusResponse handleException(Exception exception) {
         return new StatusResponse(500, exception.getMessage());
+    }
+
+    @GetMapping("/forecast")
+    public SuccessResponse<List<WeatherForecast>> getForecast(
+            @RequestParam String city,
+            @RequestParam(defaultValue = "OPEN_WEATHER") WeatherProvider provider) {
+        City cityData = City.fromName(city);
+        var result = service.getForecast(cityData.getLat(), cityData.getLon(), provider);
+        return new SuccessResponse<>(200, "Success", result);
+    }
+
+    @GetMapping("/weather/batch")
+    public SuccessResponse<Map<String, BigDecimal>> getBatchWeather(
+            @RequestParam List<String> cities,
+            @RequestParam(defaultValue = "OPEN_WEATHER") WeatherProvider provider) {
+        var result = service.getMultipleTemperatures(cities, provider);
+        return new SuccessResponse<>(200, "Success", result);
     }
 }
