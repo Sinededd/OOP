@@ -173,4 +173,53 @@ class GoogleWeatherClientTest {
 
         assertTrue(exception.getMessage().contains("Failed to parse GoogleWeather forecast response"));
     }
+
+    @Test
+    void getForecast_ReturnsList_WhenResponseHasForecastDays() {
+        BigDecimal lat = new BigDecimal("53.9006");
+        BigDecimal lon = new BigDecimal("27.5590");
+
+        String jsonResponse = """
+                {
+                  "forecastDays": [
+                    {
+                      "displayDate": {
+                        "year": 2024,
+                        "month": 5,
+                        "day": 15
+                      },
+                      "maxTemperature": {
+                        "degrees": "18.5"
+                      }
+                    },
+                    {
+                      "displayDate": {
+                        "year": 2024,
+                        "month": 5,
+                        "day": 16
+                      },
+                      "maxTemperature": {
+                        "degrees": "20.0"
+                      }
+                    }
+                  ]
+                }
+                """;
+
+        when(restClient.get()
+                .uri(any(Function.class))
+                .retrieve()
+                .toEntity(String.class))
+                .thenReturn(new ResponseEntity<>(jsonResponse, HttpStatus.OK));
+
+        List<WeatherForecast> result = googleWeatherClient.getForecast(lat, lon);
+
+        assertEquals(2, result.size());
+
+        assertEquals(new BigDecimal("18.5"), result.get(0).getTemperature());
+        assertEquals(LocalDate.of(2024, 5, 15), result.get(0).getDate());
+
+        assertEquals(new BigDecimal("20.0"), result.get(1).getTemperature());
+        assertEquals(LocalDate.of(2024, 5, 16), result.get(1).getDate());
+    }
 }

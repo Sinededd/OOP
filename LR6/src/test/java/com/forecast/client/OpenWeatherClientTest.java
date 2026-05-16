@@ -30,14 +30,11 @@ class OpenWeatherClientTest {
     @InjectMocks
     private OpenWeatherClient openWeatherClient;
 
-    
 
     @Test
     void getProviderType_ReturnsOpenWeather() {
         assertEquals(WeatherProvider.OPEN_WEATHER, openWeatherClient.getProviderType());
     }
-
-    
 
     @Test
     void getCurrentTemperature_ReturnsTemperature_WhenResponseIsValid() {
